@@ -1,0 +1,258 @@
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MADARA APP</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
+body{color:#fff;min-height:100vh;overflow:hidden;}
+#bgImage{position:fixed;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:-3;}
+body::after{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.45);z-index:-2;}
+canvas#snow{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;}
+.screen{display:none;justify-content:center;align-items:center;flex-direction:column;height:100vh;text-align:center;}
+#loginScreen{display:flex;}
+.logo{font-size:34px;font-weight:bold;color:#ff00ff;text-shadow:0 0 10px #ff00ff,0 0 25px #ff00ff,0 0 50px #ff00ff;}
+.logo span{color:#ffff66;text-shadow:0 0 15px #ffff66,0 0 25px #ffff66;}
+.login-box{margin-top:20px;padding:30px;border:2px solid #ff00ff;border-radius:15px;background:rgba(0,0,0,0.65);box-shadow:0 0 25px #ff00ff;}
+.login-box input{padding:10px 15px;border:none;border-radius:8px;outline:none;background:#111;color:#fff;font-size:16px;box-shadow:0 0 10px #00f inset;}
+.login-box button{margin-top:15px;padding:10px 20px;border:none;border-radius:8px;background:#00ff88;color:#000;font-weight:bold;cursor:pointer;box-shadow:0 0 15px #00ff88;transition:.2s;}
+.login-box button:hover{background:#00ffaa;box-shadow:0 0 25px #00ffaa;}
+#mainScreen{padding:15px;display:none;height:100vh;overflow-y:auto;}
+.header{display:flex;align-items:center;margin-bottom:15px;}
+.header img{width:70px;height:70px;border-radius:50%;margin-right:12px;border:2px solid #ff00ff;box-shadow:0 0 20px #ff00ff;}
+.header-title h1{font-size:24px;color:#ff00ff;text-shadow:0 0 20px #ff00ff;}
+.header-title h1 span{color:#ffff66;text-shadow:0 0 20px #ffff66;}
+.header-title p{font-size:13px;color:#eee;}
+.status{display:flex;gap:15px;margin:15px 0;}
+.card{flex:1;background:rgba(0,0,0,0.55);border-radius:12px;padding:12px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 0 25px #00aaffaa;}
+.circle{width:75px;height:75px;border-radius:50%;background:conic-gradient(#00ff66 0%,#333 0%);display:flex;align-items:center;justify-content:center;font-weight:bold;color:#0f0;box-shadow:0 0 20px #0f0;}
+.ping{background:rgba(0,0,0,0.55);border-radius:12px;padding:12px;margin-bottom:15px;box-shadow:0 0 25px #00ffffaa;}
+.ping span{font-weight:bold;color:#0ff;}
+.slider-box{margin:20px 0;background:rgba(0,0,0,0.65);padding:15px;border-radius:12px;box-shadow:0 0 25px #00ff88;}
+.slider-box h3{color:#fff;text-shadow:0 0 15px #0ff;}
+.slider{width:100%;-webkit-appearance:none;height:8px;border-radius:5px;background:#111;box-shadow:0 0 20px #0ff,0 0 30px #0ff;}
+.slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:#ff00ff;cursor:pointer;box-shadow:0 0 25px #ff00ff,0 0 40px #ff00ff;}
+.slider-value{margin-top:8px;text-align:center;font-weight:bold;color:#0ff;}
+.menu h3{margin:10px 0;color:#fff;text-shadow:0 0 15px #ff0;}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px;}
+.grid-item{background:rgba(0,0,0,0.75);border:2px solid #ff00ff;border-radius:15px;text-align:center;padding:20px;transition:.3s;box-shadow:0 0 25px #ff00ffaa;}
+.grid-item:hover{background:rgba(0,0,0,0.85);box-shadow:0 0 35px #ff00ff;transform:translateY(-3px);}
+.grid-item img{width:48px;height:48px;margin-bottom:8px;}
+.buttons{margin-top:20px;display:flex;flex-wrap:wrap;gap:15px;}
+.btn{flex:1;padding:15px;text-align:center;border-radius:12px;cursor:pointer;background:rgba(0,0,0,0.65);box-shadow:0 0 25px #ff0088aa;transition:.3s;}
+.btn:hover{box-shadow:0 0 35px #ff00aa;transform:scale(1.05);}
+#appPopup{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:none;justify-content:center;align-items:center;}
+.popup-box{background:#111;padding:20px;border-radius:12px;width:300px;max-height:70%;overflow-y:auto;box-shadow:0 0 35px #00f;}
+.app-item{display:flex;align-items:center;padding:10px;border-bottom:1px solid #222;cursor:pointer;transition:.2s;color:#fff;}
+.app-item:hover{background:#222;}
+.app-item img{width:32px;height:32px;margin-right:10px;border-radius:8px;}
+</style>
+</head>
+
+<body>
+<img src="https://i.postimg.cc/8cXyDkK8/IMG-8368.jpg" id="bgImage">
+<canvas id="snow"></canvas>
+
+<!-- 🔐 Màn đăng nhập -->
+<div id="loginScreen" class="screen">
+    <div class="logo">MADARA <span>APP</span></div>
+    <div class="login-box">
+        <input type="text" id="keyInput" placeholder="🔐 Nhập key..."><br>
+        <button onclick="login()">Đăng Nhập</button>
+        <p id="loginError" style="color:red;margin-top:10px;"></p>
+    </div>
+</div>
+
+<!-- ⚙️ Giao diện chính -->
+<div id="mainScreen">
+    <div class="header">
+        <img src="https://i.postimg.cc/RFzLzJvN/IMG-8362.jpg" alt="logo">
+        <div class="header-title">
+            <h1>MADARA <span>APP</span></h1>
+            <p>Lựa chọn cho game thủ</p>
+        </div>
+    </div>
+
+    <div class="status">
+        <div class="card"><div><h2>RAM</h2><span>2,24 GB / 3,82 GB</span></div><div class="circle" id="ramCircle">0%</div></div>
+        <div class="card"><div><h2>Storage</h2><span>57,60 GB / 128 GB</span></div><div class="circle" id="storageCircle">0%</div></div>
+    </div>
+
+    <div class="ping">Ping hiện tại: <span id="pingValue">0</span> ms</div>
+
+    <div class="slider-box">
+        <h3>IG Optimizer</h3>
+        <input type="range" min="100" max="600" value="360" class="slider" id="dpiRange">
+        <div class="slider-value">Bật tối ưu hoá hệ thống: <span id="dpiValue">360</span></div>
+    </div>
+
+    <div class="slider-box">
+        <h3>⚡ Sensitivity Boost</h3>
+        <input type="range" min="0" max="100" value="50" class="slider" id="fileRange">
+        <div class="slider-value">Tăng độ nhạy mượt: <span id="fileValue">50</span>%</div>
+    </div>
+
+    <div class="menu">
+        <h3>CHẾ ĐỘ TINH CHỈNH</h3>
+        <div class="grid">
+            <div class="grid-item"><img src="https://files.catbox.moe/h1hbqj.png"><p>Regedit Vip</p></div>
+            <div class="grid-item"><img src="https://files.catbox.moe/9j0vgz.png"><p>Regedit Prime</p></div>
+            <div class="grid-item"><img src="https://files.catbox.moe/atngr0.png"><p>Regedit Lite</p></div>
+            <div class="grid-item"><img src="https://files.catbox.moe/nzbwaj.png"><p>Regedit Extra</p></div>
+            <div class="grid-item"><img src="https://files.catbox.moe/gsmqp3.png"><p>Regedit Pro</p></div>
+            <div class="grid-item"><img src="https://files.catbox.moe/eahnk3.png"><p>Regedit Ultra</p></div>
+        </div>
+    </div>
+
+    <div class="buttons">
+        <div class="btn" onclick="toggleMode()">Chế độ (<span id="modeStatus">OFF</span>)</div>
+        <div class="btn">Boost Config</div>
+        <div class="btn">GameBoost</div>
+    </div>
+</div>
+
+<!-- 🕹 Popup chọn game -->
+<div id="appPopup">
+    <div class="popup-box">
+        <div class="app-item"><img src="https://files.catbox.moe/h7ktd9.png"> Free Fire</div>
+        <div class="app-item"><img src="https://files.catbox.moe/4h653j.png"> Free Fire MAX</div>
+        <div class="app-item"><img src="https://files.catbox.moe/4b2u9c.png"> Liên Quân</div>
+        <div class="app-item"><img src="https://i.postimg.cc/pTfTgpdX/IMG-8352.jpg"> PUBG Mobile</div>
+    </div>
+</div>
+
+<script>
+function login(){
+    let key=document.getElementById("keyInput").value.trim().toLowerCase();
+    if(key==="kaymadara"){
+        document.getElementById("loginScreen").style.display="none";
+        document.getElementById("mainScreen").style.display="block";
+        animateCircle("ramCircle",89);
+        animateCircle("storageCircle",76);
+        startPing();
+    } else {
+        document.getElementById("loginError").innerText="Key không hợp lệ. Hãy nhập lại";
+    }
+}
+
+function animateCircle(id,target){
+    let el=document.getElementById(id);let val=0;
+    let interval=setInterval(()=>{
+        if(val>=target){clearInterval(interval);}
+        else{val++;el.innerText=val+"%";el.style.background=`conic-gradient(#00ff66 ${val}%,#333 ${val}%)`;}
+    },30);
+}
+
+function startPing(){
+    setInterval(()=>{let val=40+Math.floor(Math.random()*30);document.getElementById("pingValue").innerText=val;},1000);
+}
+
+function toggleMode(){
+    let el=document.getElementById("modeStatus");
+    if(el.innerText==="OFF"){el.innerText="ON";document.getElementById("appPopup").style.display="flex";}
+    else{el.innerText="OFF";}
+}
+
+function closePopup(){document.getElementById("appPopup").style.display="none";}
+
+const dpi=document.getElementById("dpiRange");
+const dpiVal=document.getElementById("dpiValue");
+dpi.oninput=()=>{dpiVal.innerText=dpi.value;}
+const file=document.getElementById("fileRange");
+const fileVal=document.getElementById("fileValue");
+file.oninput=()=>{fileVal.innerText=file.value;}
+
+// ❄️ Hiệu ứng tuyết
+const canvas=document.getElementById("snow");
+const ctx=canvas.getContext("2d");
+let w,h;
+function resize(){w=canvas.width=window.innerWidth;h=canvas.height=window.innerHeight;}
+window.addEventListener("resize",resize);
+resize();
+let flakes=[];
+for(let i=0;i<500;i++){flakes.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*5+3,d:Math.random()+0.5,swing:Math.random()*2});}
+function drawSnow(){
+    ctx.clearRect(0,0,w,h);
+    ctx.fillStyle="white";
+    ctx.beginPath();
+    for(let f of flakes){ctx.moveTo(f.x,f.y);ctx.arc(f.x,f.y,f.r,0,Math.PI*2,true);}
+    ctx.fill();move();
+}
+let angle=0;
+function move(){
+    angle+=0.01;
+    for(let f of flakes){
+        f.y+=Math.pow(f.d,1.5);f.x+=Math.sin(angle+f.swing)*2;
+        if(f.y>h){f.y=0;f.x=Math.random()*w;}
+    }
+}
+setInterval(drawSnow,25);
+
+// 🟣 Khi bấm Regedit
+const regeditItems=document.querySelectorAll(".grid-item");
+regeditItems.forEach(item=>{
+    item.addEventListener("click",()=>{
+        const name=item.innerText.trim();
+        const msg=document.createElement("div");
+        msg.innerText=`✔️ Đã bật ${name}`;
+        msg.style.position="fixed";msg.style.bottom="20px";msg.style.left="50%";
+        msg.style.transform="translateX(-50%)";msg.style.background="rgba(0,0,0,0.85)";
+        msg.style.padding="10px 20px";msg.style.borderRadius="10px";msg.style.color="#fff";
+        msg.style.fontWeight="bold";msg.style.boxShadow="0 0 20px #0ff";msg.style.zIndex="9999";
+        msg.style.animation="fadeUp 2s ease forwards";document.body.appendChild(msg);
+        setTimeout(()=>msg.remove(),2000);
+        regeditItems.forEach(i=>{i.style.borderColor="#ff00ff";i.style.boxShadow="0 0 25px #ff00ffaa";i.style.background="rgba(0,0,0,0.75)";});
+        const colors=["#ffff33","#ff3333","#ff66ff","#33ccff","#00ff99","#cc66ff"];
+        const color=colors[Math.floor(Math.random()*colors.length)];
+        item.style.borderColor=color;item.style.boxShadow=`0 0 35px ${color}`;item.style.background="rgba(0,0,0,0.9)";
+    });
+});
+const style=document.createElement("style");
+style.innerHTML=`@keyframes fadeUp{0%{opacity:0;transform:translate(-50%,20px);}20%{opacity:1;transform:translate(-50%,0);}80%{opacity:1;}100%{opacity:0;transform:translate(-50%,-20px);}}`;
+document.head.appendChild(style);
+
+// 👾 Mở game – hỗ trợ iOS
+function openGame(game){
+    let schemeUrl = "";
+    switch(game){
+        case "Free Fire": schemeUrl = "freefireth://"; break;
+        case "Free Fire MAX": schemeUrl = "freefiremax://"; break;
+        case "Liên Quân": schemeUrl = "arenaofvalor://"; break;
+        case "PUBG Mobile": schemeUrl = "pubgmobile://"; break;
+        default: alert("Không tìm thấy game!"); return;
+    }
+
+    const msg=document.createElement("div");
+    msg.innerText=`👾 Đang mở ${game}...`;
+    msg.style.position="fixed";msg.style.bottom="20px";msg.style.left="50%";
+    msg.style.transform="translateX(-50%)";msg.style.background="rgba(0,0,0,0.85)";
+    msg.style.padding="10px 20px";msg.style.borderRadius="10px";msg.style.color="#0ff";
+    msg.style.fontWeight="bold";msg.style.boxShadow="0 0 20px #0ff";msg.style.zIndex="9999";
+    msg.style.animation="fadeUp 2s ease forwards";document.body.appendChild(msg);
+    setTimeout(()=>msg.remove(),2000);
+
+    // Thử mở game
+    window.location.href = schemeUrl;
+
+    // Nếu chưa có game -> chuyển đến App Store sau 1.5s
+    setTimeout(()=>{
+        switch(game){
+            case "Free Fire": window.location.href="https://apps.apple.com/app/id1300146617"; break;
+            case "Free Fire MAX": window.location.href="https://apps.apple.com/app/id1481789283"; break;
+            case "Liên Quân": window.location.href="https://apps.apple.com/app/id1150288115"; break;
+            case "PUBG Mobile": window.location.href="https://apps.apple.com/app/id1330123889"; break;
+        }
+    },1500);
+}
+
+// Khi bấm chọn game trong popup
+document.querySelectorAll(".app-item").forEach(item=>{
+    item.addEventListener("click",()=>{
+        const game=item.innerText.trim();
+        closePopup();
+        openGame(game);
+    });
+});
+</script>
+</body>
+</html>
